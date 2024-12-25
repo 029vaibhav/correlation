@@ -1,30 +1,16 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter {
-            url "http://jcenter.bintray.com/"
-        }
-    }
-    dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0"
-
-
-    }
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
-
-apply plugin: 'io.codearte.nexus-staging'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'com.bmuschko.nexus'
 
 
 archivesBaseName = 'correlation'
 group = "org.commonsources"
-version = "1.0.7.RELEASE"
+version = "1.0.8.RELEASE"
 
-sourceCompatibility = 1.8
+sourceCompatibility = 17
 
 repositories {
     mavenCentral()
@@ -32,55 +18,58 @@ repositories {
 
 
 
-modifyPom {
-    project {
-        name 'correlation'
-        description 'An open source project to integrate correlation id into your springboot application.'
-        url 'http://commonsources.com'
-        inceptionYear '2019'
-        scm {
-            url 'http://commonsources.org'
-            connection 'scm:https://github.com/029vaibhav/correlation.git'
-            developerConnection 'scm:git://cgithub.com/029vaibhav/correlation.git'
-        }
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
-        developers {
-            developer {
-                id 'correlation.agrawal'
-                name 'Vaibhav Agrawal'
-                email '029vaibhav@gmail.com'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name.set("correlation")
+                description.set("An open source project to integrate correlation id into your Spring Boot application.")
+                url.set("http://commonsources.com")
+                inceptionYear.set("2019")
+                licenses {
+                    license {
+                        name.set("The Apache Software License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/029vaibhav/correlation.git")
+                    connection.set("scm:git:https://github.com/029vaibhav/correlation.git")
+                    developerConnection.set("scm:git:https://github.com/029vaibhav/correlation.git")
+                }
+                developers {
+                    developer {
+                        id.set("correlation.agrawal")
+                        name.set("Vaibhav Agrawal")
+                        email.set("029vaibhav@gmail.com")
+                    }
+                }
             }
         }
     }
 }
 
-extraArchive {
-    sources = true
-    tests = true
-    javadoc = true
-}
-nexus {
-    sign = true
-    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/"))
+            snapshotRepositoryUrl.set(uri("https://oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
-    compileOnly group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.1.1.RELEASE'
-    // https://mvnrepository.com/artifact/org.springframework/spring-web
-    compileOnly group: 'org.springframework', name: 'spring-web', version: '5.1.3.RELEASE'
-    // https://mvnrepository.com/artifact/org.projectlombok/lombok
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
-    // https://mvnrepository.com/artifact/javax.servlet/servlet-api
-    compileOnly group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.9.3'
 
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '3.4.0'
 
+    implementation group: 'org.springframework', name: 'spring-web', version: '6.0.0'
+
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+
+    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
 }
